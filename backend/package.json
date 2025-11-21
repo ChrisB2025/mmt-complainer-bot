@@ -1,6 +1,6 @@
 {
   "name": "mmt-accountability-backend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Backend API for MMT Media Accountability Platform",
   "main": "dist/server.js",
   "scripts": {
