@@ -51,6 +51,14 @@ export default function ComplaintDetailPage() {
   }
 
   const handleSend = async () => {
+    // Check if letter still contains placeholder
+    if (complaint?.letterContent.includes('[Your name]')) {
+      toast.error('Please edit the letter to replace "[Your name]" with your actual name before sending.')
+      setIsEditing(true)
+      setEditedContent(complaint?.letterContent || '')
+      return
+    }
+
     if (
       !confirm(
         `Send this complaint to ${complaint?.incident?.outlet.complaintEmail}?`
@@ -107,11 +115,20 @@ export default function ComplaintDetailPage() {
           </p>
         </div>
       ) : (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-yellow-700 font-medium">
-            Draft - Not yet sent. Review and edit your letter below.
-          </p>
-        </div>
+        <>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-yellow-700 font-medium">
+              Draft - Not yet sent. Review and edit your letter below.
+            </p>
+          </div>
+          {complaint.letterContent.includes('[Your name]') && (
+            <div className="bg-orange-50 border border-orange-300 rounded-lg p-4">
+              <p className="text-orange-800 font-medium">
+                ⚠️ Action Required: Please edit the letter below to replace "[Your name]" with your actual name before sending.
+              </p>
+            </div>
+          )}
+        </>
       )}
 
       {/* Incident Summary */}
