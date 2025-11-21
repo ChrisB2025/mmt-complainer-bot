@@ -16,8 +16,25 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
+// Allow multiple frontend origins (development and production)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:5173', // Vite default dev port
+  process.env.FRONTEND_URL,
+].filter(Boolean); // Remove undefined values
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+
+    // Check if origin is allowed
+    if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 app.use(express.json());
