@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "node dist/scripts/seed.js",
+    "db:seed:dev": "ts-node src/scripts/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
