@@ -17,11 +17,11 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 // Allow multiple frontend origins (development and production)
-const allowedOrigins = [
+const allowedOrigins: string[] = [
   'http://localhost:3000',
   'http://localhost:5173', // Vite default dev port
   process.env.FRONTEND_URL,
-].filter(Boolean); // Remove undefined values
+].filter((origin): origin is string => typeof origin === 'string' && origin.length > 0);
 
 app.use(cors({
   origin: (origin, callback) => {
