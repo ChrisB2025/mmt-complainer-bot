@@ -104,7 +104,7 @@ router.post(
   '/',
   authenticate,
   [
-    body('outletId').notEmpty().isUUID(),
+    body('outletId').notEmpty().isString(),
     body('date').notEmpty().isISO8601(),
     body('time').optional(),
     body('programName').optional().trim(),
