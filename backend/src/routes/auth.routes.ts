@@ -97,11 +97,11 @@ router.post(
       }
 
       // Generate token
-      const token = jwt.sign(
-        { userId: user.id, email: user.email },
-        process.env.JWT_SECRET || 'secret',
-        { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
-      );
+const token = jwt.sign(
+  { userId: user.id },
+  process.env.JWT_SECRET as string,
+  { expiresIn: '24h' }  // ✅ Correct
+);
 
       res.json({
         message: 'Login successful',
