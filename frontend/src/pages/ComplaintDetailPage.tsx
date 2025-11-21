@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 import {
@@ -11,7 +11,6 @@ import {
 
 export default function ComplaintDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const [isEditing, setIsEditing] = useState(false)
   const [editedContent, setEditedContent] = useState('')
 

@@ -123,10 +123,9 @@ export default function IncidentDetailPage() {
         <div className="border-t pt-6">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="font-semibold">Complaint Status</h2>
+              <h2 className="font-semibold">Generate Complaint Letter</h2>
               <p className="text-gray-500">
-                {incident.complaints?.length || 0} complaints submitted for this
-                incident
+                Create a unique AI-generated complaint letter for this incident
               </p>
             </div>
             <button
