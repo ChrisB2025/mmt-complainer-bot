@@ -44,10 +44,11 @@ router.post(
       });
 
       // Generate token
+// Generate JWT token
 const token = jwt.sign(
-  { userId: user.id }, 
-  process.env.JWT_SECRET!,
-  { expiresIn: '24h' }  // ✅ CORRECT
+  { userId: user.id },
+  process.env.JWT_SECRET as string,
+  { expiresIn: '24h' }
 );
 
       res.status(201).json({
