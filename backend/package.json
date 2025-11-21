@@ -1,11 +1,11 @@
 {
   "name": "mmt-accountability-backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Backend API for MMT Media Accountability Platform",
   "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && prisma db push --accept-data-loss && tsc",
     "start": "node dist/server.js",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
