@@ -15,6 +15,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for Railway deployment (required for rate limiting)
+app.set('trust proxy', 1);
+
 // Middleware
 // Allow multiple frontend origins (development and production)
 const allowedOrigins: string[] = [
