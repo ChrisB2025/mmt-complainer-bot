@@ -142,6 +142,16 @@ VITE_API_URL=https://your-backend.up.railway.app/api
 - Run `npm run db:push` to sync the schema
 - Run `npm run db:seed` to add initial media outlets
 
+**Email Sending Issues:**
+- **IMPORTANT:** Email functionality requires EMAIL_USER and EMAIL_PASSWORD to be configured
+- For Gmail: Use an "App Password" (not your regular Gmail password)
+  - Go to Google Account → Security → 2-Step Verification → App Passwords
+  - Generate an app password for "Mail"
+  - Use this as EMAIL_PASSWORD
+- For other email services: Set EMAIL_SERVICE to your provider (e.g., "outlook", "yahoo")
+- **Without email configuration:** The "Send" button will timeout/fail. Users must use "Copy to Clipboard" instead
+- Check backend logs for "Email sending failed" errors if emails aren't working
+
 ### Verify Deployment
 
 1. Visit your frontend URL
