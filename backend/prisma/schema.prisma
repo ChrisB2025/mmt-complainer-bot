@@ -54,19 +54,20 @@ model Incident {
 }
 
 model Complaint {
-  id            String    @id @default(uuid())
-  incidentId    String
-  userId        String
-  letterContent String
-  sentAt        DateTime?
-  sentTo        String?
-  status        String    @default("draft") // 'draft', 'sent', 'response_received'
-  responseText  String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  incidentId     String
+  userId         String
+  letterContent  String
+  severityRating Int?      // User's rating 1-10 of how serious this infraction is
+  sentAt         DateTime?
+  sentTo         String?
+  status         String    @default("draft") // 'draft', 'sent', 'response_received'
+  responseText   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  incident      Incident  @relation(fields: [incidentId], references: [id])
-  user          User      @relation(fields: [userId], references: [id])
+  incident       Incident  @relation(fields: [incidentId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
 
   @@unique([incidentId, userId])
 }

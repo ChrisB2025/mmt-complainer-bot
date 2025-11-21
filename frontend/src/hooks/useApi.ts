@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../utils/api'
-import type { Incident, MediaOutlet, Complaint } from '../types'
+import type { Incident, MediaOutlet, Complaint, LeaderboardEntry, PlatformStats } from '../types'
 
 // Incidents
 export function useIncidents(params?: {
@@ -90,12 +90,13 @@ export function useComplaint(id: string) {
 export function useGenerateLetter() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (incidentId: string) => {
-      const { data } = await api.post('/generate-letter', { incidentId })
+    mutationFn: async ({ incidentId, severityRating }: { incidentId: string; severityRating?: number }) => {
+      const { data } = await api.post('/generate-letter', { incidentId, severityRating })
       return data as { complaint: Complaint; outlet: MediaOutlet }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['complaints'] })
+      queryClient.invalidateQueries({ queryKey: ['incidents'] })
     },
   })
 }
@@ -167,6 +168,27 @@ export function useRegister() {
     }) => {
       const { data } = await api.post('/auth/register', userData)
       return data as { token: string; user: { id: string; email: string; name: string | null; preferredTone: string } }
+    },
+  })
+}
+
+// Stats
+export function useLeaderboard(groupBy: 'presenter' | 'outlet' = 'presenter') {
+  return useQuery({
+    queryKey: ['leaderboard', groupBy],
+    queryFn: async () => {
+      const { data } = await api.get(`/stats/league-table?groupBy=${groupBy}`)
+      return data as { groupBy: string; leaderboard: LeaderboardEntry[] }
+    },
+  })
+}
+
+export function usePlatformStats() {
+  return useQuery({
+    queryKey: ['platformStats'],
+    queryFn: async () => {
+      const { data } = await api.get('/stats/overview')
+      return data as PlatformStats
     },
   })
 }

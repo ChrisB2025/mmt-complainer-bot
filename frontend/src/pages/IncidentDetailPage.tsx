@@ -11,6 +11,8 @@ export default function IncidentDetailPage() {
   const navigate = useNavigate()
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [showRatingDialog, setShowRatingDialog] = useState(false)
+  const [severityRating, setSeverityRating] = useState(7)
 
   const { data: incident, isLoading, error } = useIncident(id!)
   const generateLetter = useGenerateLetter()
@@ -24,7 +26,7 @@ export default function IncidentDetailPage() {
 
     setIsGenerating(true)
     try {
-      const result = await generateLetter.mutateAsync(id!)
+      const result = await generateLetter.mutateAsync({ incidentId: id!, severityRating })
       toast.success('Letter generated successfully!')
       navigate(`/complaints/${result.complaint.id}`)
     } catch (error: any) {
@@ -37,6 +39,7 @@ export default function IncidentDetailPage() {
       }
     } finally {
       setIsGenerating(false)
+      setShowRatingDialog(false)
     }
   }
 
@@ -121,6 +124,14 @@ export default function IncidentDetailPage() {
         </div>
 
         <div className="border-t pt-6">
+          {incident.complaintCount !== undefined && incident.complaintCount > 0 && (
+            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-blue-800 text-sm">
+                <strong>📊 Community Data:</strong> {incident.complaintCount} {incident.complaintCount === 1 ? 'complaint' : 'complaints'} submitted
+                {incident.avgSeverityRating && ` • Avg severity: ${incident.avgSeverityRating}/10`}
+              </p>
+            </div>
+          )}
           <div className="flex justify-between items-center">
             <div>
               <h2 className="font-semibold">Generate Complaint Letter</h2>
@@ -129,22 +140,72 @@ export default function IncidentDetailPage() {
               </p>
             </div>
             <button
-              onClick={handleGenerateLetter}
+              onClick={() => setShowRatingDialog(true)}
               disabled={isGenerating}
               className="btn btn-primary"
             >
-              {isGenerating ? (
-                <>
-                  <span className="animate-spin mr-2">&#9696;</span>
-                  Generating Letter...
-                </>
-              ) : (
-                'Generate My Complaint Letter'
-              )}
+              Generate My Complaint Letter
             </button>
           </div>
         </div>
       </div>
+
+      {/* Severity Rating Dialog */}
+      {showRatingDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold mb-4">Rate This Infraction</h3>
+            <p className="text-gray-600 mb-6">
+              How serious do you consider this infraction to be?
+            </p>
+
+            <div className="mb-6">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>Minor</span>
+                <span className="font-bold text-lg text-primary-600">{severityRating}/10</span>
+                <span>Very Serious</span>
+              </div>
+              <input
+                type="range"
+                min="1"
+                max="10"
+                value={severityRating}
+                onChange={(e) => setSeverityRating(parseInt(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary-600"
+              />
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => (
+                  <span key={n}>{n}</span>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={handleGenerateLetter}
+                disabled={isGenerating}
+                className="btn btn-primary flex-1"
+              >
+                {isGenerating ? (
+                  <>
+                    <span className="animate-spin mr-2">&#9696;</span>
+                    Generating...
+                  </>
+                ) : (
+                  'Generate Letter'
+                )}
+              </button>
+              <button
+                onClick={() => setShowRatingDialog(false)}
+                disabled={isGenerating}
+                className="btn btn-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Outlet Contact Info */}
       <div className="card bg-gray-50">

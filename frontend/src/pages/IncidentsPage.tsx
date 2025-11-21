@@ -9,6 +9,7 @@ export default function IncidentsPage() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
   const [filters, setFilters] = useState({
     outletId: '',
+    presenterName: '',
     infractionType: '',
     page: 1,
   })
@@ -56,6 +57,16 @@ export default function IncidentsPage() {
                 </option>
               ))}
             </select>
+          </div>
+          <div>
+            <label className="label">Presenter Name</label>
+            <input
+              type="text"
+              className="input"
+              placeholder="Search by presenter..."
+              value={filters.presenterName}
+              onChange={(e) => updateFilter('presenterName', e.target.value)}
+            />
           </div>
           <div>
             <label className="label">Infraction Type</label>
@@ -127,10 +138,15 @@ export default function IncidentsPage() {
                     )}
                   </div>
                 </div>
-                <div className="text-right ml-4">
+                <div className="text-right ml-4 flex flex-col items-end gap-1">
                   <span className="text-primary-600 font-medium">
-                    {incident._count?.complaints || 0} complaints
+                    {incident.complaintCount || 0} {incident.complaintCount === 1 ? 'complaint' : 'complaints'}
                   </span>
+                  {incident.avgSeverityRating !== null && incident.avgSeverityRating !== undefined && (
+                    <span className="text-sm text-gray-600">
+                      Avg: <span className="font-semibold text-orange-600">{incident.avgSeverityRating}/10</span>
+                    </span>
+                  )}
                 </div>
               </div>
             </Link>
