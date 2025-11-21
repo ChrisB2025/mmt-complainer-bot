@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev --respawn src/server.ts",
     "build": "prisma generate && tsc",
-    "start": "prisma db push --accept-data-loss && node dist/server.js",
+    "start": "prisma db push --accept-data-loss && npm run db:seed && node dist/server.js",
     "postinstall": "prisma generate",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:seed": "node dist/scripts/seed.js",
+    "db:seed:dev": "ts-node src/scripts/seed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
