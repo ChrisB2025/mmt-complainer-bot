@@ -31,15 +31,17 @@ router.get('/', optionalAuth, async (req: AuthRequest, res: Response) => {
 
     const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
-    const [incidents, total] = await Promise.all([
+    const [incidentsRaw, total] = await Promise.all([
       prisma.incident.findMany({
         where,
         include: {
           outlet: {
             select: { id: true, name: true, type: true }
           },
-          _count: {
-            select: { complaints: true }
+          complaints: {
+            select: {
+              severityRating: true
+            }
           }
         },
         orderBy: { date: 'desc' },
@@ -48,6 +50,35 @@ router.get('/', optionalAuth, async (req: AuthRequest, res: Response) => {
       }),
       prisma.incident.count({ where })
     ]);
+
+    // Calculate aggregated statistics for each incident
+    const incidents = incidentsRaw.map(incident => {
+      const complaintCount = incident.complaints.length;
+      const ratings = incident.complaints
+        .map(c => c.severityRating)
+        .filter((r): r is number => r !== null);
+      const avgRating = ratings.length > 0
+        ? Math.round((ratings.reduce((sum, r) => sum + r, 0) / ratings.length) * 10) / 10
+        : null;
+
+      return {
+        id: incident.id,
+        outletId: incident.outletId,
+        date: incident.date,
+        time: incident.time,
+        programName: incident.programName,
+        presenterName: incident.presenterName,
+        description: incident.description,
+        mediaUrl: incident.mediaUrl,
+        infractionType: incident.infractionType,
+        createdById: incident.createdById,
+        createdAt: incident.createdAt,
+        updatedAt: incident.updatedAt,
+        outlet: incident.outlet,
+        complaintCount,
+        avgSeverityRating: avgRating
+      };
+    });
 
     res.json({
       incidents,

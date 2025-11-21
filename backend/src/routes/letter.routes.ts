@@ -10,7 +10,10 @@ const router = Router();
 router.post(
   '/',
   authenticate,
-  [body('incidentId').notEmpty().isUUID()],
+  [
+    body('incidentId').notEmpty().isUUID(),
+    body('severityRating').optional().isInt({ min: 1, max: 10 })
+  ],
   async (req: AuthRequest, res: Response) => {
     try {
       const errors = validationResult(req);
@@ -18,7 +21,7 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
 
-      const { incidentId } = req.body;
+      const { incidentId, severityRating } = req.body;
 
       // Check if user already has a complaint for this incident
       const existingComplaint = await prisma.complaint.findFirst({
@@ -72,6 +75,7 @@ router.post(
           incidentId,
           userId: req.user!.id,
           letterContent,
+          severityRating: severityRating || null,
           status: 'draft'
         },
         include: {

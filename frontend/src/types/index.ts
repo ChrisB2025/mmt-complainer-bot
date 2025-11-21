@@ -27,9 +27,8 @@ export interface Incident {
   createdById: string | null
   createdAt: string
   outlet: MediaOutlet
-  _count?: {
-    complaints: number
-  }
+  complaintCount?: number
+  avgSeverityRating?: number | null
 }
 
 export interface Complaint {
@@ -37,12 +36,33 @@ export interface Complaint {
   incidentId: string
   userId: string
   letterContent: string
+  severityRating: number | null
   sentAt: string | null
   sentTo: string | null
   status: 'draft' | 'sent' | 'response_received'
   responseText: string | null
   createdAt: string
   incident?: Incident
+}
+
+export interface LeaderboardEntry {
+  presenter?: string
+  outlet?: string
+  outletType?: string
+  outlets?: string[]
+  incidentCount: number
+  complaintCount: number
+  avgSeverityRating: number | null
+}
+
+export interface PlatformStats {
+  totalIncidents: number
+  totalComplaints: number
+  totalUsers: number
+  totalOutlets: number
+  sentComplaints: number
+  draftComplaints: number
+  avgSeverityRating: number | null
 }
 
 export type InfractionType = 'household_analogy' | 'debt_scare' | 'insolvency_myth' | 'other'

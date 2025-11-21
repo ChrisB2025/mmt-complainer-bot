@@ -9,6 +9,7 @@ import IncidentDetailPage from './pages/IncidentDetailPage'
 import CreateIncidentPage from './pages/CreateIncidentPage'
 import MyComplaintsPage from './pages/MyComplaintsPage'
 import ComplaintDetailPage from './pages/ComplaintDetailPage'
+import LeaderboardPage from './pages/LeaderboardPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated)
@@ -27,6 +28,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/incidents" element={<IncidentsPage />} />
         <Route path="/incidents/:id" element={<IncidentDetailPage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
         <Route
           path="/incidents/new"
           element={

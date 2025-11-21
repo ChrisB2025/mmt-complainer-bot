@@ -26,6 +26,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               >
                 Incidents
               </Link>
+              <Link
+                to="/leaderboard"
+                className="hover:text-primary-200 transition-colors"
+              >
+                🏆 Leaderboard
+              </Link>
 
               {isAuthenticated ? (
                 <>
