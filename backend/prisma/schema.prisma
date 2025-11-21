@@ -1,0 +1,72 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  name          String?
+  preferredTone String      @default("professional") // 'professional', 'academic', 'passionate'
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  incidents     Incident[]
+  complaints    Complaint[]
+}
+
+model MediaOutlet {
+  id             String     @id @default(uuid())
+  name           String
+  type           String?    // 'tv', 'radio', 'print', 'online'
+  complaintEmail String?
+  complaintUrl   String?
+  notes          String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  incidents      Incident[]
+}
+
+model Incident {
+  id             String      @id @default(uuid())
+  outletId       String
+  date           DateTime
+  time           String?
+  programName    String?
+  presenterName  String?
+  description    String
+  mediaUrl       String?
+  infractionType String?     // 'household_analogy', 'debt_scare', 'insolvency_myth', 'other'
+  createdById    String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  outlet         MediaOutlet @relation(fields: [outletId], references: [id])
+  createdBy      User?       @relation(fields: [createdById], references: [id])
+  complaints     Complaint[]
+}
+
+model Complaint {
+  id            String    @id @default(uuid())
+  incidentId    String
+  userId        String
+  letterContent String
+  sentAt        DateTime?
+  sentTo        String?
+  status        String    @default("draft") // 'draft', 'sent', 'response_received'
+  responseText  String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  incident      Incident  @relation(fields: [incidentId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
+
+  @@unique([incidentId, userId])
+}
