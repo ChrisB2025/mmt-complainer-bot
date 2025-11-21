@@ -160,6 +160,19 @@ The database seed includes UK media outlets:
 - Financial Times
 - LBC Radio
 
+## Deployment
+
+### Railway Deployment
+
+For detailed Railway deployment instructions, see [RAILWAY_DEPLOYMENT.md](./RAILWAY_DEPLOYMENT.md).
+
+**Quick Start:**
+1. Deploy backend first (with PostgreSQL addon)
+2. Deploy frontend (set root directory to `frontend`)
+3. Set `VITE_API_URL` in frontend to point to backend
+4. Set `FRONTEND_URL` in backend to point to frontend
+5. Run database migrations and seed data
+
 ## License
 
 MIT
