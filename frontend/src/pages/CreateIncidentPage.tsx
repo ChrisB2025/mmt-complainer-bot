@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
-import { useCreateIncident, useOutlets } from '../hooks/useApi'
+import { useCreateIncident, useOutlets, useSubmitOutletSuggestion } from '../hooks/useApi'
 import { INFRACTION_TYPES } from '../types'
 
 interface IncidentForm {
@@ -20,7 +20,16 @@ export default function CreateIncidentPage() {
   const navigate = useNavigate()
   const { data: outlets, isLoading: outletsLoading } = useOutlets()
   const createIncident = useCreateIncident()
+  const submitSuggestion = useSubmitOutletSuggestion()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showSuggestionForm, setShowSuggestionForm] = useState(false)
+  const [suggestionData, setSuggestionData] = useState({
+    outletName: '',
+    outletType: '',
+    websiteUrl: '',
+    suggestedBy: '',
+    additionalInfo: ''
+  })
 
   const {
     register,
@@ -28,7 +37,43 @@ export default function CreateIncidentPage() {
     formState: { errors },
   } = useForm<IncidentForm>()
 
+  const handleOutletChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    if (value === 'suggest-new') {
+      setShowSuggestionForm(true)
+    } else {
+      setShowSuggestionForm(false)
+    }
+  }
+
+  const handleSuggestionSubmit = async () => {
+    if (!suggestionData.outletName.trim()) {
+      toast.error('Please enter an outlet name')
+      return
+    }
+
+    try {
+      const result = await submitSuggestion.mutateAsync(suggestionData)
+      toast.success(result.message)
+      setSuggestionData({
+        outletName: '',
+        outletType: '',
+        websiteUrl: '',
+        suggestedBy: '',
+        additionalInfo: ''
+      })
+      setShowSuggestionForm(false)
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to submit suggestion')
+    }
+  }
+
   const onSubmit = async (data: IncidentForm) => {
+    if (data.outletId === 'suggest-new') {
+      toast.error('Please select an outlet or submit your suggestion first')
+      return
+    }
+
     setIsSubmitting(true)
     try {
       const incident = await createIncident.mutateAsync({
@@ -68,7 +113,10 @@ export default function CreateIncidentPage() {
             <label className="label">Media Outlet *</label>
             <select
               className="input"
-              {...register('outletId', { required: 'Please select an outlet' })}
+              {...register('outletId', {
+                required: 'Please select an outlet',
+                onChange: handleOutletChange
+              })}
               disabled={outletsLoading}
             >
               <option value="">Select an outlet...</option>
@@ -77,6 +125,7 @@ export default function CreateIncidentPage() {
                   {outlet.name} ({outlet.type})
                 </option>
               ))}
+              <option value="suggest-new">📝 Suggest a new outlet...</option>
             </select>
             {errors.outletId && (
               <p className="text-red-500 text-sm mt-1">
@@ -84,6 +133,94 @@ export default function CreateIncidentPage() {
               </p>
             )}
           </div>
+
+          {/* Outlet Suggestion Form */}
+          {showSuggestionForm && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-semibold text-blue-900">Suggest a New Media Outlet</h3>
+                  <p className="text-sm text-blue-700">
+                    Can't find the outlet you're looking for? Suggest it and we'll add it to our database.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSuggestionForm(false)}
+                  className="text-blue-700 hover:text-blue-900"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div>
+                <label className="label">Outlet Name *</label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="e.g., Novara Media"
+                  value={suggestionData.outletName}
+                  onChange={(e) => setSuggestionData({ ...suggestionData, outletName: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="label">Type</label>
+                <select
+                  className="input"
+                  value={suggestionData.outletType}
+                  onChange={(e) => setSuggestionData({ ...suggestionData, outletType: e.target.value })}
+                >
+                  <option value="">Select type...</option>
+                  <option value="tv">TV</option>
+                  <option value="radio">Radio</option>
+                  <option value="print">Print</option>
+                  <option value="online">Online</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="label">Website URL</label>
+                <input
+                  type="url"
+                  className="input"
+                  placeholder="https://..."
+                  value={suggestionData.websiteUrl}
+                  onChange={(e) => setSuggestionData({ ...suggestionData, websiteUrl: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="label">Your Name/Email (optional)</label>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="So we can credit you or follow up if needed"
+                  value={suggestionData.suggestedBy}
+                  onChange={(e) => setSuggestionData({ ...suggestionData, suggestedBy: e.target.value })}
+                />
+              </div>
+
+              <div>
+                <label className="label">Additional Information</label>
+                <textarea
+                  className="input min-h-[80px]"
+                  placeholder="Any additional info that would help us research this outlet (e.g., how to submit complaints)"
+                  value={suggestionData.additionalInfo}
+                  onChange={(e) => setSuggestionData({ ...suggestionData, additionalInfo: e.target.value })}
+                />
+              </div>
+
+              <button
+                type="button"
+                onClick={handleSuggestionSubmit}
+                className="btn btn-primary w-full"
+              >
+                Submit Suggestion
+              </button>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>

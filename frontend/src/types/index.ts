@@ -79,3 +79,15 @@ export const PREFERRED_TONES = [
   { value: 'academic', label: 'Academic' },
   { value: 'passionate', label: 'Passionate Citizen' },
 ]
+
+export interface OutletSuggestion {
+  id: string
+  outletName: string
+  outletType: string | null
+  websiteUrl: string | null
+  suggestedBy: string | null
+  additionalInfo: string | null
+  status: 'pending' | 'approved' | 'rejected'
+  createdAt: string
+  updatedAt: string
+}

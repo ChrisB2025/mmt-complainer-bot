@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import api from '../utils/api'
-import type { Incident, MediaOutlet, Complaint, LeaderboardEntry, PlatformStats } from '../types'
+import type { Incident, MediaOutlet, Complaint, LeaderboardEntry, PlatformStats, OutletSuggestion } from '../types'
 
 // Incidents
 export function useIncidents(params?: {
@@ -61,6 +61,21 @@ export function useOutlets() {
     queryFn: async () => {
       const { data } = await api.get('/outlets')
       return data.outlets as MediaOutlet[]
+    },
+  })
+}
+
+export function useSubmitOutletSuggestion() {
+  return useMutation({
+    mutationFn: async (suggestion: {
+      outletName: string
+      outletType?: string
+      websiteUrl?: string
+      suggestedBy?: string
+      additionalInfo?: string
+    }) => {
+      const { data } = await api.post('/suggestions', suggestion)
+      return data as { message: string; suggestion: OutletSuggestion }
     },
   })
 }

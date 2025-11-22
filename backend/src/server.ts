@@ -9,6 +9,7 @@ import outletRoutes from './routes/outlet.routes';
 import complaintRoutes from './routes/complaint.routes';
 import letterRoutes from './routes/letter.routes';
 import statsRoutes from './routes/stats.routes';
+import suggestionRoutes from './routes/suggestion.routes';
 import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
@@ -66,6 +67,7 @@ app.use('/api/outlets', outletRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/generate-letter', letterRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/suggestions', suggestionRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
