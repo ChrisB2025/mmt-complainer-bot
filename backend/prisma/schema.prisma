@@ -71,3 +71,15 @@ model Complaint {
 
   @@unique([incidentId, userId])
 }
+
+model OutletSuggestion {
+  id                String    @id @default(uuid())
+  outletName        String
+  outletType        String?   // 'tv', 'radio', 'print', 'online', 'other'
+  suggestedBy       String?   // User's name or email
+  websiteUrl        String?
+  additionalInfo    String?   // Any additional information provided by user
+  status            String    @default("pending") // 'pending', 'approved', 'rejected'
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
